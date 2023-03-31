@@ -7,6 +7,6 @@ type CompletionService struct {
 }
 
 type CompletionMessage struct {
-	Content string `json:"content"`
+	Content string `json:"content" binding:"required"`
 	Role    string `json:"role"`
 }
