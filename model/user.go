@@ -30,6 +30,13 @@ const (
 	Suspend string = "suspend"
 )
 
+const (
+	USER_NO_AUTHORIZ = iota
+	USER_HAS_BALANCE
+	USER_VIP_NORMAL
+	USER_VIP_PLUS
+)
+
 // GetUser 用ID获取用户
 func GetUser(ID interface{}) (User, error) {
 	var user User

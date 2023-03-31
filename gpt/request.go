@@ -107,6 +107,8 @@ func (c *ChatController) Completion(ctx *gin.Context, req chat.CompletionService
 			Prompt:           prompt,
 		}
 
+		resp1, err := client.CreateCompletionStream(ctx, req)
+		resp1.Recv()
 		resp, err := client.CreateCompletion(ctx, req)
 		if err != nil {
 			c.ResponseJson(ctx, http.StatusInternalServerError, err.Error(), nil)
