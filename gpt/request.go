@@ -157,5 +157,3 @@ func newDialContext(socks5 string) (dialContextFunc, error) {
 		return baseDialer.DialContext, nil
 	}
 }
-
-var ChatClient ChatController
