@@ -1,1 +1,1 @@
-# gpt-proxy-server
+# proxy-server
