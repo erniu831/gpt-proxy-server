@@ -10,8 +10,8 @@ type UserRegisterService struct {
 	Username        string `form:"username" json:"username" binding:"required,min=3,max=30"`
 	Phone           string `form:"phone" json:"phone" binding:"min=11,max=11"`
 	Email           string `form:"email" json:"email"`
-	Password        string `form:"password" json:"password" binding:"required,min=8,max=40"`
-	PasswordConfirm string `form:"password_confirm" json:"password_confirm" binding:"required,min=8,max=40"`
+	Password        string `form:"password" json:"password" binding:"required,min=6,max=40"`
+	PasswordConfirm string `form:"password_confirm" json:"password_confirm" binding:"required,min=6,max=40"`
 }
 
 // valid 验证表单

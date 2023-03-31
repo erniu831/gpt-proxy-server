@@ -11,7 +11,7 @@ import (
 // UserLoginService 管理用户登录的服务
 type UserLoginService struct {
 	Username string `form:"username" json:"username" binding:"required,min=3,max=30"`
-	Password string `form:"password" json:"password" binding:"required,min=8,max=40"`
+	Password string `form:"password" json:"password" binding:"required,min=6,max=40"`
 }
 
 // setSession 设置session

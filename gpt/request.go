@@ -3,9 +3,6 @@ package gpt
 import (
 	"context"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	gogpt "github.com/sashabaranov/go-openai"
-	"golang.org/x/net/proxy"
 	"net"
 	"net/http"
 	"net/url"
@@ -14,6 +11,10 @@ import (
 	"quick-talk/types"
 	"strings"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	gogpt "github.com/sashabaranov/go-openai"
+	"golang.org/x/net/proxy"
 )
 
 var chatModels = []string{gogpt.GPT432K0314, gogpt.GPT4, gogpt.GPT40314, gogpt.GPT432K, gogpt.GPT3Dot5Turbo, gogpt.GPT3Dot5Turbo0301}
@@ -24,17 +25,12 @@ type ChatController struct {
 func (c *ChatController) ResponseJson(ctx *gin.Context, code int, e string, r gin.H) {
 	fmt.Println("res:", r)
 	fmt.Println("err:", e)
-
 }
 
 // Completion 回复
-func (c *ChatController) Completion(ctx *gin.Context, req chat.CompletionService) {
+func Completion(ctx *gin.Context, req chat.CompletionService) (gin.H, error) {
 	request := gogpt.ChatCompletionRequest{
 		Messages: req.Messages,
-	}
-	if len(request.Messages) == 0 {
-		c.ResponseJson(ctx, http.StatusBadRequest, "request messages required", nil)
-		return
 	}
 
 	cnf := conf.Conf
@@ -84,13 +80,12 @@ func (c *ChatController) Completion(ctx *gin.Context, req chat.CompletionService
 		request.Model = cnf.Model
 		resp, err := client.CreateChatCompletion(ctx, request)
 		if err != nil {
-			c.ResponseJson(ctx, http.StatusInternalServerError, err.Error(), nil)
-			return
+			return nil, err
 		}
-		c.ResponseJson(ctx, http.StatusOK, "", gin.H{
+		return gin.H{
 			"reply":    resp.Choices[0].Message.Content,
 			"messages": append(request.Messages, resp.Choices[0].Message),
-		})
+		}, nil
 	} else {
 		prompt := ""
 		for _, item := range request.Messages {
@@ -107,21 +102,19 @@ func (c *ChatController) Completion(ctx *gin.Context, req chat.CompletionService
 			Prompt:           prompt,
 		}
 
-		resp1, err := client.CreateCompletionStream(ctx, req)
-		resp1.Recv()
 		resp, err := client.CreateCompletion(ctx, req)
 		if err != nil {
-			c.ResponseJson(ctx, http.StatusInternalServerError, err.Error(), nil)
-			return
+			return nil, err
 		}
 
-		c.ResponseJson(ctx, http.StatusOK, "", gin.H{
+		return gin.H{
 			"reply": resp.Choices[0].Text,
 			"messages": append(request.Messages, gogpt.ChatCompletionMessage{
 				Role:    "assistant",
 				Content: resp.Choices[0].Text,
 			}),
-		})
+			"test": resp,
+		}, nil
 	}
 }
 
