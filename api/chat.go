@@ -15,10 +15,11 @@ func ChatCompletion(c *gin.Context) {
 		fmt.Println(fmt.Sprintf("%+v", service))
 		res, err := gpt.Completion(c, service)
 		if err != nil {
-			c.JSON(200, res)
-		} else {
 			fmt.Println(err)
 			c.JSON(200, ErrorResponse(err))
+		} else {
+			fmt.Println(res)
+			c.JSON(200, res)
 		}
 	} else {
 		c.JSON(200, ErrorResponse(err))
