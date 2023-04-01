@@ -17,6 +17,7 @@ func ChatCompletion(c *gin.Context) {
 		if err != nil {
 			c.JSON(200, res)
 		} else {
+			fmt.Println(err)
 			c.JSON(200, ErrorResponse(err))
 		}
 	} else {
