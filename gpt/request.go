@@ -159,6 +159,10 @@ func CompletionSSE(ctx *gin.Context, req chat.CompletionService) error {
 	defer stream.Close()
 
 	fmt.Printf("Stream response: ")
+	// resDataStruct := gin.H{
+	// 	"reply":    resp.Choices[0].Message.Content,
+	// 	"messages": append(request.Messages, resp.Choices[0].Message)}
+	var replyContent string
 	for {
 		response, err := stream.Recv()
 		if errors.Is(err, io.EOF) {
@@ -170,10 +174,15 @@ func CompletionSSE(ctx *gin.Context, req chat.CompletionService) error {
 			fmt.Printf("\nStream error: %v\n", err)
 			return err
 		}
-		sseString := fmt.Sprintf("data: %s", response.Choices[0].Delta.Content)
-		ctx.SSEvent("message", sseString)
+		replyContent = replyContent + response.Choices[0].Delta.Content
+		sseRes := gin.H{
+			"reply": replyContent,
+			"messages": append(request.Messages, gogpt.ChatCompletionMessage{
+				Role:    "assistant",
+				Content: replyContent,
+			})}
+		ctx.SSEvent("message", sseRes)
 		ctx.Writer.Flush()
-		fmt.Printf(fmt.Sprintf("data: %+v", response))
 	}
 	// return gin.H{
 	// 	"reply":    resp.Choices[0].Message.Content,
