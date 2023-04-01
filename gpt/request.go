@@ -9,6 +9,7 @@ import (
 	"quick-talk/conf"
 	"quick-talk/service/chat"
 	"quick-talk/types"
+	"quick-talk/util"
 	"strings"
 	"time"
 
@@ -34,8 +35,9 @@ func Completion(ctx *gin.Context, req chat.CompletionService) (gin.H, error) {
 	}
 
 	cnf := conf.Conf
-	fmt.Println("apikey:", cnf.ApiKey)
-	gptConfig := gogpt.DefaultConfig(cnf.ApiKey)
+	apiKey, _ := util.DecodeBase64ToString(cnf.ApiKey)
+	fmt.Println("apikey:", apiKey)
+	gptConfig := gogpt.DefaultConfig(apiKey)
 
 	if cnf.Proxy != "" {
 		transport := &http.Transport{}

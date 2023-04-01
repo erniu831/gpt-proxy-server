@@ -42,12 +42,8 @@ func NewRouter() *gin.Engine {
 			auth.DELETE("user/logout", api.UserLogout)
 		}
 
-		// chat
-		v1.POST("chat/completion", api.ChatCompletion)
 		// user
 		v1.POST("session", api.GetSession)
-
-		v1.POST("chat-process", api.ChatProcess)
 	}
 	return r
 }

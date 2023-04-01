@@ -2,7 +2,7 @@ package cache
 
 import (
 	"os"
-	"singo/util"
+	"quick-talk/util"
 	"strconv"
 
 	"github.com/go-redis/redis"
