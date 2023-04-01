@@ -158,9 +158,15 @@ func CompletionSSE(ctx *gin.Context, req chat.CompletionService) error {
 		return err
 	}
 	for receivedResponse, streamErr := stream.Recv(); streamErr == nil; {
-		fmt.Println("receivedResponse:", receivedResponse)
-		byteData, _ := json.Marshal(receivedResponse)
-		ctx.Writer.WriteString(string(byteData))
+		if receivedResponse.ID != "" {
+
+			fmt.Println("receivedResponse:", receivedResponse)
+			byteData, _ := json.Marshal(receivedResponse)
+			ctx.Writer.WriteString(string(byteData))
+		}
+		if streamErr != nil {
+			fmt.Println("streamErr:", streamErr)
+		}
 	}
 
 	_, streamErr := stream.Recv()
