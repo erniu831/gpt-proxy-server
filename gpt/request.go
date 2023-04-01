@@ -2,7 +2,9 @@ package gpt
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"io"
 	"net"
 	"quick-talk/conf"
 	"quick-talk/service/chat"
@@ -11,8 +13,9 @@ import (
 	"strings"
 	"time"
 
+	"errors"
+
 	"github.com/gin-gonic/gin"
-	"github.com/goccy/go-json"
 	gogpt "github.com/sashabaranov/go-openai"
 	"golang.org/x/net/proxy"
 )
@@ -149,25 +152,24 @@ func CompletionSSE(ctx *gin.Context, req chat.CompletionService) error {
 	}
 
 	request.Model = cnf.Model
-	resp, err := client.CreateChatCompletionStream(ctx, request)
-
+	stream, err := client.CreateChatCompletionStream(ctx, request)
 	if err != nil {
+		fmt.Println("createStreamErr:", stream)
 		return err
 	}
-	defer resp.Close()
+	for receivedResponse, streamErr := stream.Recv(); streamErr == nil; {
+		fmt.Println("receivedResponse:", receivedResponse)
+		byteData, _ := json.Marshal(receivedResponse)
+		ctx.Writer.WriteString(string(byteData))
+	}
 
-	for data, err := resp.Recv(); err != nil; {
-		// 将每一行流数据作为SSE事件数据发送给客户端
-		fmt.Println("stream:", data)
-		dataByte, _ := json.Marshal(data)
-		if _, err := ctx.Writer.WriteString(string(dataByte)); err != nil {
-			return err
-		}
-		ctx.Writer.Flush()
+	_, streamErr := stream.Recv()
+	if errors.Is(streamErr, io.EOF) {
+		ctx.SSEvent("complete", "")
+
 	}
 
 	// 发送完成事件并结束SSE连接
-	ctx.SSEvent("complete", "")
 	return nil
 	// return gin.H{
 	// 	"reply":    resp.Choices[0].Message.Content,
