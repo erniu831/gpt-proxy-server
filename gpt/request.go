@@ -170,8 +170,8 @@ func CompletionSSE(ctx *gin.Context, req chat.CompletionService) error {
 			fmt.Printf("\nStream error: %v\n", err)
 			return err
 		}
-
-		if _, err := ctx.Writer.WriteString(response.Choices[0].Delta.Content); err != nil {
+		sseString := fmt.Sprintf("data: %s", response.Choices[0].Delta.Content)
+		if _, err := ctx.Writer.WriteString(sseString); err != nil {
 			fmt.Println("send sse err:", err)
 			return err
 		}
