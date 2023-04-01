@@ -108,6 +108,7 @@ func Completion(ctx *gin.Context, req chat.CompletionService) (gin.H, error) {
 		if err != nil {
 			return nil, err
 		}
+		fmt.Println(resp.Choices[0])
 
 		return gin.H{
 			"reply": resp.Choices[0].Text,

@@ -16,6 +16,8 @@ func ChatCompletion(c *gin.Context) {
 		res, err := gpt.Completion(c, service)
 		if err != nil {
 			c.JSON(200, res)
+		} else {
+			c.JSON(200, ErrorResponse(err))
 		}
 	} else {
 		c.JSON(200, ErrorResponse(err))
