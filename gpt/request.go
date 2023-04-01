@@ -157,11 +157,13 @@ func CompletionSSE(ctx *gin.Context, req chat.CompletionService) error {
 		fmt.Println("createStreamErr:", stream)
 		return err
 	}
+	defer stream.Close()
+
 	for receivedResponse, streamErr := stream.Recv(); streamErr == nil; {
 		if streamErr != nil {
 			fmt.Println("streamErr:", streamErr)
 		}
-		if len(receivedResponse.Choices) != 0 {
+		if receivedResponse.Choices[0].Delta.Content != "" {
 			fmt.Println("receivedResponse:", receivedResponse)
 			byteData, _ := json.Marshal(receivedResponse)
 			ctx.Writer.WriteString(string(byteData))
