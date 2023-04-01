@@ -2,7 +2,6 @@ package gpt
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"net"
@@ -154,36 +153,31 @@ func CompletionSSE(ctx *gin.Context, req chat.CompletionService) error {
 	request.Model = cnf.Model
 	stream, err := client.CreateChatCompletionStream(ctx, request)
 	if err != nil {
-		fmt.Println("createStreamErr:", stream)
+		fmt.Printf("ChatCompletionStream error: %v\n", err)
 		return err
 	}
 	defer stream.Close()
 
-	for receivedResponse, streamErr := stream.Recv(); streamErr == nil; {
-		if streamErr != nil {
-			fmt.Println("streamErr:", streamErr)
+	fmt.Printf("Stream response: ")
+	for {
+		response, err := stream.Recv()
+		if errors.Is(err, io.EOF) {
+			fmt.Println("\nStream finished")
+			return nil
 		}
-		if receivedResponse.Choices[0].Delta.Content != "" {
-			fmt.Println("receivedResponse:", receivedResponse)
-			byteData, _ := json.Marshal(receivedResponse)
-			ctx.Writer.WriteString(string(byteData))
+
+		if err != nil {
+			fmt.Printf("\nStream error: %v\n", err)
+			return err
 		}
+
+		fmt.Printf(response.Choices[0].Delta.Content)
 	}
-
-	_, streamErr := stream.Recv()
-	if errors.Is(streamErr, io.EOF) {
-		ctx.SSEvent("complete", "")
-
-	}
-
-	// 发送完成事件并结束SSE连接
-	return nil
 	// return gin.H{
 	// 	"reply":    resp.Choices[0].Message.Content,
 	// 	"messages": append(request.Messages, resp.Choices[0].Message),
 	// 	"test":     resp,
 	// }, nil
-
 }
 
 type dialContextFunc func(ctx context.Context, network, address string) (net.Conn, error)
