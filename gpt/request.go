@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net"
-	"net/http"
-	"net/url"
 	"quick-talk/conf"
 	"quick-talk/service/chat"
 	"quick-talk/types"
@@ -14,6 +12,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/goccy/go-json"
 	gogpt "github.com/sashabaranov/go-openai"
 	"golang.org/x/net/proxy"
 )
@@ -39,30 +38,30 @@ func Completion(ctx *gin.Context, req chat.CompletionService) (gin.H, error) {
 	fmt.Println("apikey:", apiKey)
 	gptConfig := gogpt.DefaultConfig(apiKey)
 
-	if cnf.Proxy != "" {
-		transport := &http.Transport{}
+	// if cnf.Proxy != "" {
+	// 	transport := &http.Transport{}
 
-		if strings.HasPrefix(cnf.Proxy, "socks5h://") {
-			// 创建一个 DialContext 对象，并设置代理服务器
-			dialContext, err := newDialContext(cnf.Proxy[10:])
-			if err != nil {
-				panic(err)
-			}
-			transport.DialContext = dialContext
-		} else {
-			// 创建一个 HTTP Transport 对象，并设置代理服务器
-			proxyUrl, err := url.Parse(cnf.Proxy)
-			if err != nil {
-				panic(err)
-			}
-			transport.Proxy = http.ProxyURL(proxyUrl)
-		}
-		// 创建一个 HTTP 客户端，并将 Transport 对象设置为其 Transport 字段
-		gptConfig.HTTPClient = &http.Client{
-			Transport: transport,
-		}
+	// 	if strings.HasPrefix(cnf.Proxy, "socks5h://") {
+	// 		// 创建一个 DialContext 对象，并设置代理服务器
+	// 		dialContext, err := newDialContext(cnf.Proxy[10:])
+	// 		if err != nil {
+	// 			panic(err)
+	// 		}
+	// 		transport.DialContext = dialContext
+	// 	} else {
+	// 		// 创建一个 HTTP Transport 对象，并设置代理服务器
+	// 		proxyUrl, err := url.Parse(cnf.Proxy)
+	// 		if err != nil {
+	// 			panic(err)
+	// 		}
+	// 		transport.Proxy = http.ProxyURL(proxyUrl)
+	// 	}
+	// 	// 创建一个 HTTP 客户端，并将 Transport 对象设置为其 Transport 字段
+	// 	gptConfig.HTTPClient = &http.Client{
+	// 		Transport: transport,
+	// 	}
 
-	}
+	// }
 
 	// 自定义gptConfig.BaseURL
 	if cnf.ApiURL != "" {
@@ -118,6 +117,64 @@ func Completion(ctx *gin.Context, req chat.CompletionService) (gin.H, error) {
 			}),
 		}, nil
 	}
+}
+
+// Completion 回复
+func CompletionSSE(ctx *gin.Context, req chat.CompletionService) error {
+	request := gogpt.ChatCompletionRequest{
+		Messages: req.Messages,
+	}
+
+	cnf := conf.Conf
+	apiKey, _ := util.DecodeBase64ToString(cnf.ApiKey)
+	fmt.Println("apikey:", apiKey)
+	gptConfig := gogpt.DefaultConfig(apiKey)
+
+	// 自定义gptConfig.BaseURL
+	if cnf.ApiURL != "" {
+		gptConfig.BaseURL = cnf.ApiURL
+	}
+
+	client := gogpt.NewClientWithConfig(gptConfig)
+	if request.Messages[0].Role != "system" {
+		newMessage := append([]gogpt.ChatCompletionMessage{
+			{Role: "system", Content: cnf.BotDesc},
+		}, request.Messages...)
+		request.Messages = newMessage
+	}
+
+	// cnf.Model 是否在 chatModels 中
+	if !types.Contains(chatModels, cnf.Model) {
+		cnf.Model = "gpt-3.5-turbo"
+	}
+
+	request.Model = cnf.Model
+	resp, err := client.CreateChatCompletionStream(ctx, request)
+
+	if err != nil {
+		return err
+	}
+	defer resp.Close()
+
+	for data, err := resp.Recv(); err != nil; {
+		// 将每一行流数据作为SSE事件数据发送给客户端
+		fmt.Println("stream:", data)
+		dataByte, _ := json.Marshal(data)
+		if _, err := ctx.Writer.WriteString(string(dataByte)); err != nil {
+			return err
+		}
+		ctx.Writer.Flush()
+	}
+
+	// 发送完成事件并结束SSE连接
+	ctx.SSEvent("complete", "")
+	return nil
+	// return gin.H{
+	// 	"reply":    resp.Choices[0].Message.Content,
+	// 	"messages": append(request.Messages, resp.Choices[0].Message),
+	// 	"test":     resp,
+	// }, nil
+
 }
 
 type dialContextFunc func(ctx context.Context, network, address string) (net.Conn, error)

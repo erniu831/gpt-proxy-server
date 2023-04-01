@@ -25,3 +25,17 @@ func ChatCompletion(c *gin.Context) {
 		c.JSON(200, ErrorResponse(err))
 	}
 }
+
+// GET ChatCompletionSSE
+func ChatCompletionSSE(c *gin.Context) {
+	c.Header("Content-Type", "text/event-stream")
+	c.Header("Cache-Control", "no-cache")
+	c.Header("Connection", "keep-alive")
+
+	var service chatService.CompletionService
+	if err := c.ShouldBind(&service); err == nil {
+		gpt.CompletionSSE(c, service)
+	} else {
+		c.SSEvent("complete", "error")
+	}
+}

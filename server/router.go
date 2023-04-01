@@ -47,5 +47,10 @@ func NewRouter() *gin.Engine {
 		// user
 		v1.POST("session", api.GetSession)
 	}
+
+	sseV1 := r.Group("/sse/v1")
+	{
+		sseV1.POST("chat/completion", api.ChatCompletionSSE)
+	}
 	return r
 }
