@@ -171,6 +171,11 @@ func CompletionSSE(ctx *gin.Context, req chat.CompletionService) error {
 			return err
 		}
 
+		if _, err := ctx.Writer.WriteString(response.Choices[0].Delta.Content); err != nil {
+			fmt.Println("send sse err:", err)
+			return err
+		}
+		ctx.Writer.Flush()
 		fmt.Printf(response.Choices[0].Delta.Content)
 	}
 	// return gin.H{
