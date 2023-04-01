@@ -10,3 +10,9 @@ type CompletionMessage struct {
 	Content string `json:"content" binding:"required"`
 	Role    string `json:"role"`
 }
+
+type ChatProcessService struct {
+	Prompt        string `json:"prompt"`
+	Options       string `json:"options"`
+	SystemMessage string `json:"systemMessage"`
+}
