@@ -87,6 +87,7 @@ func Completion(ctx *gin.Context, req chat.CompletionService) (gin.H, error) {
 		return gin.H{
 			"reply":    resp.Choices[0].Message.Content,
 			"messages": append(request.Messages, resp.Choices[0].Message),
+			"test":     resp,
 		}, nil
 	} else {
 		prompt := ""
@@ -108,7 +109,6 @@ func Completion(ctx *gin.Context, req chat.CompletionService) (gin.H, error) {
 		if err != nil {
 			return nil, err
 		}
-		fmt.Println(resp.Choices[0])
 
 		return gin.H{
 			"reply": resp.Choices[0].Text,
@@ -116,7 +116,6 @@ func Completion(ctx *gin.Context, req chat.CompletionService) (gin.H, error) {
 				Role:    "assistant",
 				Content: resp.Choices[0].Text,
 			}),
-			"test": resp,
 		}, nil
 	}
 }
