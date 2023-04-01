@@ -170,13 +170,10 @@ func CompletionSSE(ctx *gin.Context, req chat.CompletionService) error {
 			fmt.Printf("\nStream error: %v\n", err)
 			return err
 		}
-		sseString := fmt.Sprintf("data: %s", response.Choices[0].Delta.Content)
-		if _, err := ctx.Writer.WriteString(sseString); err != nil {
-			fmt.Println("send sse err:", err)
-			return err
-		}
+		sseString := fmt.Sprintf("data: %s\n\n", response.Choices[0].Delta.Content)
+		ctx.SSEvent("message", sseString)
 		ctx.Writer.Flush()
-		fmt.Printf(response.Choices[0].Delta.Content)
+		fmt.Printf(sseString)
 	}
 	// return gin.H{
 	// 	"reply":    resp.Choices[0].Message.Content,
