@@ -12,8 +12,9 @@ import (
 func GetSession(c *gin.Context) {
 	user, exists := c.Get("user")
 	if exists {
-		userModel, _ := user.(model.User)
-		c.JSON(200, serializer.BuildUserResponse(userModel))
+		userModel, _ := user.(*model.User)
+		// _ = json.Unmarshal([]byte(user), &userModel)
+		c.JSON(200, serializer.BuildUserResponse(*userModel))
 	} else {
 		c.JSON(200, ErrorResponse(errors.New("未登录")))
 	}

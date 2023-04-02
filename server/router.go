@@ -39,13 +39,13 @@ func NewRouter() *gin.Engine {
 		{
 			// User Routing
 			auth.GET("user/me", api.UserMe)
-			auth.DELETE("user/logout", api.UserLogout)
+			auth.POST("user/logout", api.UserLogout)
+			// user
+			auth.POST("session", api.GetSession)
 		}
 
 		// chat
 		v1.POST("chat/completion", api.ChatCompletion)
-		// user
-		v1.POST("session", api.GetSession)
 	}
 
 	sseV1 := r.Group("/sse/v1")
