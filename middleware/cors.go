@@ -21,7 +21,7 @@ func Cors() gin.HandlerFunc {
 		if regexp.MustCompile(`^https?://43\.159\.46\.132(:\d+)?$`).MatchString(origin) {
 			return true
 		}
-		if regexp.MustCompile(`^https?://cheap-ai.com(:\d+)?$`).MatchString(origin) {
+		if regexp.MustCompile(`^https?://*cheap-ai.com(:\d+)?$`).MatchString(origin) {
 			return true
 		}
 		if regexp.MustCompile(`^http://127\.0\.0\.1:\d+$`).MatchString(origin) {
