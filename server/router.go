@@ -33,6 +33,9 @@ func NewRouter() *gin.Engine {
 
 		// 核券
 		v1.POST("code/redeem", api.CodeRedeem)
+
+		// 查券
+		v1.POST("code/check", api.CodeCheck)
 		// 需要登录保护的
 		auth := v1.Group("")
 		auth.Use(middleware.AuthRequired())

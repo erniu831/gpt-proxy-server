@@ -31,6 +31,7 @@ const (
 	CodeEncryptError = 50002
 	//CodeParamErr 各种奇奇怪怪的参数错误
 	CodeParamErr = 40001
+	CodeYWError  = 10002
 )
 
 // CheckLogin 检查登录

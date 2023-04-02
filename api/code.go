@@ -1,8 +1,9 @@
 package api
 
 import (
-	"github.com/gin-gonic/gin"
 	codeService "quick-talk/service/code"
+
+	"github.com/gin-gonic/gin"
 )
 
 // CodeGenerate 兑换
@@ -30,6 +31,17 @@ func CodeRedeem(c *gin.Context) {
 			return
 		}
 		c.JSON(200, true)
+	} else {
+		c.JSON(200, ErrorResponse(err))
+	}
+}
+
+// CodeCheck 查询
+func CodeCheck(c *gin.Context) {
+	var service codeService.CheckCodeService
+	if err := c.ShouldBind(&service); err == nil {
+		res := service.CheckCode()
+		c.JSON(200, res)
 	} else {
 		c.JSON(200, ErrorResponse(err))
 	}
