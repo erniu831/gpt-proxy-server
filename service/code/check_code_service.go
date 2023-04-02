@@ -7,8 +7,7 @@ import (
 )
 
 type CheckCodeService struct {
-	Code   string `form:"code" json:"code"`
-	UserId int    `form:"userId" json:"userId"`
+	Code string `form:"code" json:"code"`
 }
 
 func (service *CheckCodeService) CheckCode() serializer.Response {
