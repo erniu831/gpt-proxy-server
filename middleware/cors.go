@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"regexp"
 
 	"github.com/gin-contrib/cors"
@@ -21,6 +22,7 @@ func Cors() gin.HandlerFunc {
 		if regexp.MustCompile(`^https?://43\.159\.46\.132(:\d+)?$`).MatchString(origin) {
 			return true
 		}
+		fmt.Println(origin, regexp.MustCompile(`^https?://*cheap-ai.com(:\d+)?$`).MatchString(origin))
 		if regexp.MustCompile(`^https?://*cheap-ai.com(:\d+)?$`).MatchString(origin) {
 			return true
 		}
