@@ -18,13 +18,16 @@ func Cors() gin.HandlerFunc {
 	// } else {
 	// 	// 测试环境下模糊匹配本地开头的请求
 	config.AllowOriginFunc = func(origin string) bool {
+		if regexp.MustCompile(`^https?://43\.159\.46\.132(:\d+)?$`).MatchString(origin) {
+			return true
+		}
+		if regexp.MustCompile(`^https?://cheap-ai.com(:\d+)?$`).MatchString(origin) {
+			return true
+		}
 		if regexp.MustCompile(`^http://127\.0\.0\.1:\d+$`).MatchString(origin) {
 			return true
 		}
 		if regexp.MustCompile(`^http://localhost:\d+$`).MatchString(origin) {
-			return true
-		}
-		if regexp.MustCompile(`^https?://43\.159\.46\.132(:\d+)?$`).MatchString(origin) {
 			return true
 		}
 		return false
