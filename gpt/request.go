@@ -123,6 +123,9 @@ func Completion(ctx *gin.Context, req chat.CompletionService) (gin.H, error) {
 
 // Completion 回复
 func CompletionSSE(ctx *gin.Context, req chat.CompletionService) error {
+	if len(req.Messages) == 0 {
+		return errors.New("无效入参")
+	}
 	request := gogpt.ChatCompletionRequest{
 		Messages: req.Messages,
 	}
