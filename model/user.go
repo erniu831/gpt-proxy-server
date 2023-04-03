@@ -1,9 +1,10 @@
 package model
 
 import (
+	"time"
+
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
-	"time"
 )
 
 // User 用户模型
@@ -11,12 +12,12 @@ type User struct {
 	gorm.Model
 	Username       string `gorm:"uniqueIndex,size:191"`
 	PasswordDigest string
-	Phone          string    `gorm:"uniqueIndex,size:191"`
-	Email          string    `gorm:"uniqueIndex,size:191"`
-	Membership     int       `gorm:"default:0"`
-	MembershipDate time.Time `gorm:"default:null"`
-	Balance        float64   `gorm:"default:0"`
-	Status         string    `gorm:"default:null"`
+	Phone          string     `gorm:"uniqueIndex,size:191"`
+	Email          string     `gorm:"uniqueIndex,size:191"`
+	Membership     int        `gorm:"default:0"`
+	MembershipDate *time.Time `gorm:"default:null"`
+	Balance        float64    `gorm:"default:0"`
+	Status         string     `gorm:"default:null"`
 }
 
 const (

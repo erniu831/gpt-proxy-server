@@ -28,7 +28,7 @@ func BuildUser(user model.User) User {
 		Phone:          user.Phone,
 		Email:          user.Email,
 		Membership:     user.Membership,
-		MembershipDate: user.MembershipDate,
+		MembershipDate: *user.MembershipDate,
 		Balance:        user.Balance,
 	}
 }

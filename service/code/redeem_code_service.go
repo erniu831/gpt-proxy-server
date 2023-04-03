@@ -39,9 +39,11 @@ func RedeemCode(service RedeemCodeService) error {
 		}
 		user.Membership = 1
 		if user.MembershipDate.After(time.Now()) {
-			user.MembershipDate = user.MembershipDate.Add(time.Duration(value) * time.Hour)
+			newDate := user.MembershipDate.Add(time.Duration(value) * time.Hour)
+			user.MembershipDate = &newDate
 		} else {
-			user.MembershipDate = time.Now().Add(time.Duration(value) * time.Hour)
+			newDate := time.Now().Add(time.Duration(value) * time.Hour)
+			user.MembershipDate = &newDate
 		}
 	} else if dbCode.Type == model.CODE_TYPE_VALUE {
 		// Balance code
@@ -49,7 +51,7 @@ func RedeemCode(service RedeemCodeService) error {
 		if err != nil {
 			return errors.New("Invalid code value")
 		}
-		user.Balance += balance
+		user.Balance = user.Balance + balance
 	} else {
 		return errors.New("Invalid code value")
 	}

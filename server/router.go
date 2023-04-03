@@ -31,9 +31,6 @@ func NewRouter() *gin.Engine {
 		// 发券
 		v1.POST("code/generate", api.CodeGenerate)
 
-		// 核券
-		v1.POST("code/redeem", api.CodeRedeem)
-
 		// 查券
 		v1.POST("code/check", api.CodeCheck)
 		// 需要登录保护的
@@ -45,6 +42,8 @@ func NewRouter() *gin.Engine {
 			auth.POST("user/logout", api.UserLogout)
 			// user
 			auth.POST("session", api.GetSession)
+			// 核券
+			auth.POST("code/redeem", api.CodeRedeem)
 		}
 
 		// chat

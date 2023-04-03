@@ -29,7 +29,7 @@ func CodeRedeem(c *gin.Context) {
 	if service.UserId == 0 {
 		cUser, exist := c.Get("user")
 		if exist {
-			user, ok := cUser.(model.User)
+			user, ok := cUser.(*model.User)
 			if ok {
 				service.UserId = user.ID
 			}
