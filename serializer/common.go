@@ -70,3 +70,17 @@ func ParamErr(msg string, err error) Response {
 	}
 	return Err(CodeParamErr, msg, err)
 }
+
+// BuildStringResponse
+func BuildStringResponse(data string) Response {
+	return Response{
+		Data: data,
+	}
+}
+
+// BuildBoolResponse
+func BuildBoolResponse(data bool) Response {
+	return Response{
+		Data: data,
+	}
+}

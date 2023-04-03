@@ -12,7 +12,7 @@ type Code struct {
 	Value      string    `json:"value"`
 	ExpireAt   time.Time `json:"expireAt"`
 	Status     int       `json:"status"`
-	UsedUserId int       `json:"usedUserId"`
+	UsedUserId uint      `json:"usedUserId"`
 	UsedTime   time.Time `json:"usedTime"`
 }
 

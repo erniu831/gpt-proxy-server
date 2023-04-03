@@ -8,8 +8,8 @@ import (
 )
 
 type RedeemCodeService struct {
-	Code   string `form:"code" json:"code"`
-	UserId int    `form:"userId" json:"userId"`
+	Code   string `form:"code" json:"code" binding: "required"`
+	UserId uint   `form:"userId" json:"userId"`
 }
 
 func (service *RedeemCodeService) RedeemCode() error {

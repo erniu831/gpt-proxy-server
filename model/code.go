@@ -1,19 +1,20 @@
 package model
 
 import (
-	"gorm.io/gorm"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type Code struct {
 	gorm.Model
-	Code       string `gorm:"uniqueIndex"`
+	Code       string `gorm:"uniqueIndex,size:191"`
 	Type       int    `gorm:"default:0"`
 	Value      string
 	ExpireAt   time.Time
 	Status     int `gorm:"default:0"`
-	UsedUserId int
-	UsedTime   time.Time
+	UsedUserId uint
+	UsedTime   time.Time `gorm:"default:null"`
 }
 
 const (
