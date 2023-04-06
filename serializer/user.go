@@ -7,15 +7,15 @@ import (
 
 // User 用户序列化器
 type User struct {
-	ID             uint      `json:"id"`
-	Username       string    `json:"username"`
-	Status         string    `json:"status"`
-	Phone          string    `json:"phone"`
-	Email          string    `json:"email"`
-	Membership     int       `json:"membership"`
-	MembershipDate time.Time `json:"membershipDate"`
-	Balance        float64   `json:"balance"`
-	CreatedAt      int64     `json:"created_at"`
+	ID             uint       `json:"id"`
+	Username       string     `json:"username"`
+	Status         string     `json:"status"`
+	Phone          string     `json:"phone"`
+	Email          string     `json:"email"`
+	Membership     int        `json:"membership"`
+	MembershipDate *time.Time `json:"membershipDate"`
+	Balance        float64    `json:"balance"`
+	CreatedAt      int64      `json:"created_at"`
 }
 
 // BuildUser 序列化用户
@@ -28,7 +28,7 @@ func BuildUser(user model.User) User {
 		Phone:          user.Phone,
 		Email:          user.Email,
 		Membership:     user.Membership,
-		MembershipDate: *user.MembershipDate,
+		MembershipDate: user.MembershipDate,
 		Balance:        user.Balance,
 	}
 }
