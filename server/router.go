@@ -51,8 +51,15 @@ func NewRouter() *gin.Engine {
 	}
 
 	sseV1 := r.Group("/sse/v1")
+	sseV1.Use(middleware.AuthRequired())
 	{
 		sseV1.POST("chat/completion", api.ChatCompletionSSE)
 	}
+
+	sseOpen := r.Group("/sse/open")
+	{
+		sseOpen.POST("chat/completion", api.ChatCompletionForFreeSSE)
+	}
+
 	return r
 }
