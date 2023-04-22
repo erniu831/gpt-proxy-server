@@ -45,5 +45,5 @@ func ErrorResponse(err error) serializer.Response {
 		return serializer.ParamErr("JSON类型不匹配", err)
 	}
 
-	return serializer.ParamErr("参数错误", err)
+	return serializer.YWErr(err)
 }

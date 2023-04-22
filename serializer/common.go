@@ -71,6 +71,10 @@ func ParamErr(msg string, err error) Response {
 	return Err(CodeParamErr, msg, err)
 }
 
+func YWErr(err error) Response {
+	return Err(CodeYWError, err.Error(), err)
+}
+
 // BuildStringResponse
 func BuildStringResponse(data string) Response {
 	return Response{
